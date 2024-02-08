@@ -10,6 +10,7 @@ The samples are:
 - Ni75Co25
 - Ni50Co50
 - Ni25Co75
+
 Each dataset is stored in a `.dat` file with the two columns, the first one contains the 2 theta angle and the second contains the intensity values.
 
 ## Goal
