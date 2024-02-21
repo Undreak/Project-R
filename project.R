@@ -1,23 +1,54 @@
 library(tidyverse)
 
-d1b <- read.table("AD Ni75Co25.dat")
-d2b <- read.table("AR cO50nI50.dat")
-d3b <- read.table("JGD Co75Ni25.dat")
-d4b <- read.table("AD Co.dat")
+d1b <- read.table("data/AD Ni75Co25.dat")
+d2b <- read.table("data/AR cO50nI50.dat")
+d3b <- read.table("data/JGD Co75Ni25.dat")
+d4b <- read.table("data/AD Co.dat")
 
 # No background
-d1 <- read.table("AD Ni75Co25_nb.dat")
-d2 <- read.table("AR cO50nI50_nb.dat")
-d3 <- read.table("JGD Co75Ni25_nb.dat")
-d4 <- read.table("AD Co_nb.dat")
+d1 <- read.table("data/AD Ni75Co25_nb.dat")
+d2 <- read.table("data/AR cO50nI50_nb.dat")
+d3 <- read.table("data/JGD Co75Ni25_nb.dat")
+d4 <- read.table("data/AD Co_nb.dat")
 
 # TODO: ADD Ni REF DATA AND SUBSAMPLE IT TO FIT
+
+datab <- bind_cols(d1b, d2b$V2, d3b$V2, d4b$V2)
+
+colnames(datab) <- c("2_theta", "Ni75Co25", "Ni50Co50", "Ni25Co75", "Co")
+
+ggplot(datab, aes(x = `2_theta`)) +
+  geom_ribbon(aes(ymin = 0, ymax = `Ni25Co75`, fill = "Ni25Co75"),
+    alpha = 0.1, color = "green"
+  ) +
+  geom_ribbon(aes(ymin = 0, ymax = `Ni50Co50`, fill = "Ni50Co50"),
+    alpha = 0.1, color = "red"
+  ) +
+  geom_ribbon(aes(ymin = 0, ymax = `Ni75Co25`, fill = "Ni75Co25"),
+    alpha = 0.1, color = "blue"
+  ) +
+  geom_ribbon(aes(ymin = 0, ymax = `Co`, fill = "Co"),
+    alpha = 0.1, color = "yellow"
+  ) +
+  labs(
+    title = "Powder X-Ray Diffraction of Ni_(1-x)Co_x perovskites",
+    x = "2 theta",
+    y = "Intensity",
+    fill = "Composition"
+  ) +
+  scale_fill_manual(values = c(
+    "Ni75Co25" = "blue", "Ni50Co50" = "red",
+    "Ni25Co75" = "green", "Co" = "yellow"
+  )) +
+  theme_minimal()
 
 data <- bind_cols(d1, d2$V2, d3$V2, d4$V2)
 
 colnames(data) <- c("2_theta", "Ni75Co25", "Ni50Co50", "Ni25Co75", "Co")
 
-# TODO: ADD PLOT FOR BACKGROUND AND NON BACKGROUND COMPARISONS
+# Threshold for peaks
+threshold <- 50
+# PERF: FIND BEST THRESHOLD VALUE
 
 ggplot(data, aes(x = `2_theta`)) +
   geom_ribbon(aes(ymin = 0, ymax = `Ni25Co75`, fill = "Ni25Co75"),
@@ -32,9 +63,13 @@ ggplot(data, aes(x = `2_theta`)) +
   geom_ribbon(aes(ymin = 0, ymax = `Co`, fill = "Co"),
     alpha = 0.1, color = "yellow"
   ) +
+  geom_hline(
+    yintercept = threshold,
+    linetype = "dashed", color = "black"
+  ) +
   labs(
-    title = "Ni_(1-x)Co_X",
-    x = "2_theta",
+    title = "Powder X-Ray Diffraction of Ni_(1-x)Co_x perovskites",
+    x = "2 theta",
     y = "Intensity",
     fill = "Composition"
   ) +
@@ -44,9 +79,7 @@ ggplot(data, aes(x = `2_theta`)) +
   )) +
   theme_minimal()
 
-# Threshold for peaks
-threshold <- 50
-# PERF: FIND BEST THRESHOLD VALUE
+ggsave("plot/graph.png")
 
 find_peaks <- function(data) {
   if (length(data) < 2) {
@@ -128,7 +161,7 @@ ggplot(non_zero_data_long, aes(
   y = Condition, fill = cluster
 )) +
   geom_tile(color = "white") +
-  scale_fill_discrete() +  # Use discrete fill scale
+  scale_fill_discrete() + # Use discrete fill scale
   labs(
     title = "Heatmap of Non-Zero Values",
     x = "2_theta",

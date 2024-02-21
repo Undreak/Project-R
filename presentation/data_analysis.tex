@@ -76,13 +76,43 @@
         \item Identification of patterns and trends.
     \end{itemize}
 
-    \begin{lstlisting}[language=R]
+    \begin{lstlisting}[language=R, basicstyle=\tiny\ttfamily]
     # Exploratory Data Analysis (EDA)
-    ggplot(data_long, aes(x = `2_theta`, y = Value, color = Condition)) +
-        geom_point() +
-        labs(title = "Exploratory Data Analysis") +
-        theme_minimal()
+    ggplot(data, aes(x = `2_theta`)) +
+  geom_ribbon(aes(ymin = 0, ymax = `Ni25Co75`, fill = "Ni25Co75"),
+    alpha = 0.1, color = "green"
+  ) +
+  geom_ribbon(aes(ymin = 0, ymax = `Ni50Co50`, fill = "Ni50Co50"),
+    alpha = 0.1, color = "red"
+  ) +
+  geom_ribbon(aes(ymin = 0, ymax = `Ni75Co25`, fill = "Ni75Co25"),
+    alpha = 0.1, color = "blue"
+  ) +
+  geom_ribbon(aes(ymin = 0, ymax = `Co`, fill = "Co"),
+    alpha = 0.1, color = "yellow"
+  ) +
+  labs(
+    title = "Powder X-ray Diffraction of Ni_(1-x)Co_x perovskites",
+    x = "2 theta",
+    y = "Intensity",
+    fill = "Composition"
+  ) +
+  scale_fill_manual(values = c(
+    "Ni75Co25" = "blue", "Ni50Co50" = "red",
+    "Ni25Co75" = "green", "Co" = "yellow"
+  )) +
+  theme_minimal()
     \end{lstlisting}
+\end{frame}
+
+
+\begin{frame}{Visualization of X-ray Diffraction}
+    \begin{figure}
+        \centering
+        \includegraphics[width=0.8\textwidth]{../plot/graph.png}
+        \caption{Powder X-ray Diffraction of Ni\_(1-x)Co\_x perovskites}
+        \label{fig:xrd}
+    \end{figure}
 \end{frame}
 
 \begin{frame}[fragile]{ANOVA Testing}
