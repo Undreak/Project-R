@@ -1,5 +1,5 @@
 # Fdb version 4
-["pdflatex"] 1708547753 "data_analysis.tex" "data_analysis.pdf" "data_analysis" 1708547761 2
+["pdflatex"] 1708547998 "data_analysis.tex" "data_analysis.pdf" "data_analysis" 1708548006 2
   "../plot/graph.png" 1708546633 328553 a3d4da2ed4d1040c58b15bf6b1ad0d60 ""
   "../plot/graph_nb.png" 1708546630 350335 60e871d60a2751393e40cd8279627e83 ""
   "../plot/graph_nb_zoom.png" 1708546631 362485 8f6702364f275128513a862a4eb9707d ""
@@ -229,11 +229,11 @@
   "/usr/share/texlive/texmf-dist/web2c/texmf.cnf" 1689984000 40900 887e0dc8cac988a9e9c574af364cf837 ""
   "/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map" 1699726019 5032813 e0fc45b994b5c396a625822fc24d94af ""
   "/var/lib/texmf/web2c/pdftex/pdflatex.fmt" 1706628327 6477881 2ce32ae1cb0161e9407e28119166ad2c ""
-  "data_analysis.aux" 1708547760 3923 642aa929b636ff039fc5e755e282c516 "pdflatex"
-  "data_analysis.nav" 1708547760 2225 c1c5afbecb67aec0ba53ac1043f451e4 "pdflatex"
-  "data_analysis.out" 1708547754 0 d41d8cd98f00b204e9800998ecf8427e "pdflatex"
-  "data_analysis.tex" 1708547752 11709 c0cd2ccae1fc7aa18f1272d22e3f57b6 ""
-  "data_analysis.vrb" 1708547760 1279 8ea51d078ee041338b8ca02ccaf44b38 "pdflatex"
+  "data_analysis.aux" 1708548005 3923 642aa929b636ff039fc5e755e282c516 "pdflatex"
+  "data_analysis.nav" 1708548005 2225 c1c5afbecb67aec0ba53ac1043f451e4 "pdflatex"
+  "data_analysis.out" 1708547999 0 d41d8cd98f00b204e9800998ecf8427e "pdflatex"
+  "data_analysis.tex" 1708547997 11709 c0cd2ccae1fc7aa18f1272d22e3f57b6 ""
+  "data_analysis.vrb" 1708548005 1279 8ea51d078ee041338b8ca02ccaf44b38 "pdflatex"
   (generated)
   "data_analysis.aux"
   "data_analysis.log"
