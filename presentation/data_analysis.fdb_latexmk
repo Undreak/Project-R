@@ -1,9 +1,10 @@
 # Fdb version 4
-["pdflatex"] 1708555464 "data_analysis.tex" "data_analysis.pdf" "data_analysis" 1708555472 2
+["pdflatex"] 1708557001 "data_analysis.tex" "data_analysis.pdf" "data_analysis" 1708557010 2
   "../plot/graph.png" 1708555279 353207 7cdb88ad2be58c0aecd141b68579601f ""
   "../plot/graph_nt.png" 1708555275 350335 60e871d60a2751393e40cd8279627e83 ""
   "../plot/graph_nt_zoom.png" 1708555277 362485 8f6702364f275128513a862a4eb9707d ""
   "../plot/intensity.png" 1708555292 84252 0c5c401da11559c23774c5bed2e58ead ""
+  "../plot/mean_theta.png" 1708557001 74440 731a914d200926bdfc35d136b7a94d90 ""
   "../plot/peak_clusters.png" 1708555284 83746 c66ccfc7bc07f72f84afbf5cd1484c0c ""
   "../plot/peaks.png" 1708555282 76352 7bec6261a8a0ad2a5150efd25909a6ed ""
   "../plot/theta.png" 1708555286 103632 f3c1cacc3cba5c2796d881a21a3977c2 ""
@@ -222,11 +223,11 @@
   "/usr/share/texlive/texmf-dist/web2c/texmf.cnf" 1689984000 40900 887e0dc8cac988a9e9c574af364cf837 ""
   "/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map" 1699726019 5032813 e0fc45b994b5c396a625822fc24d94af ""
   "/var/lib/texmf/web2c/pdftex/pdflatex.fmt" 1706628327 6477881 2ce32ae1cb0161e9407e28119166ad2c ""
-  "data_analysis.aux" 1708555471 4387 43c35a8cae5ce8dd7fbc711baac00bf5 "pdflatex"
-  "data_analysis.nav" 1708555471 2318 6bf076db6e1a8e33e3ccecc7cb97fcb8 "pdflatex"
-  "data_analysis.out" 1708555464 0 d41d8cd98f00b204e9800998ecf8427e "pdflatex"
-  "data_analysis.tex" 1708555463 11996 54d4237f8315a149b4e9fea10ee91a15 ""
-  "data_analysis.vrb" 1708555471 439 c5b99c53a0fc13522a12358d5f10348d "pdflatex"
+  "data_analysis.aux" 1708557010 4516 76b6062884ff7a21237fbe086379779f "pdflatex"
+  "data_analysis.nav" 1708557010 2411 8c6bbe43bf923ac88764b8cf06f7ccff "pdflatex"
+  "data_analysis.out" 1708557002 0 d41d8cd98f00b204e9800998ecf8427e "pdflatex"
+  "data_analysis.tex" 1708556343 12214 1641ebc3ce658a5c2a78d115bfaa15ff ""
+  "data_analysis.vrb" 1708557009 439 c5b99c53a0fc13522a12358d5f10348d "pdflatex"
   (generated)
   "data_analysis.aux"
   "data_analysis.log"

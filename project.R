@@ -330,30 +330,6 @@ boxplot_plot <- ggplot(non_zero_data_long, aes(
   ) +
   theme_minimal()
 
-# Add text annotations
-boxplot_plot +
-  annotate("text",
-    x = 4, y = max(non_zero_data_long$Intensity),
-    label = paste(
-      "Lowest Mean (", lowest_mean_condition, "):",
-      round(summary_stats$mean_value[
-        summary_stats$Composition == lowest_mean_condition
-      ], 2)
-    ),
-    vjust = 1.5, hjust = 0.5, size = 3, color = "red"
-  ) +
-  annotate("text",
-    x =  10,
-    y = max(non_zero_data_long$Intensity),
-    label = paste(
-      "Highest Mean (", highest_mean_condition, "):",
-      round(summary_stats$mean_value[
-        summary_stats$Composition == highest_mean_condition
-      ], 2)
-    ),
-    vjust = 1.5, hjust = 0.5, size = 3, color = "blue"
-  )
-
 ggsave("plot/intensity.png", width = 10, height = 5.625)
 
 composition_stats <- non_zero_data_long %>%
@@ -373,3 +349,53 @@ anova_result <- aov(Intensity ~ Composition * cluster,
 
 # Print ANOVA summary
 summary(anova_result)
+
+# Group by cluster and composition, calculate mean 2_theta
+cluster_composition_means <- non_zero_data_long %>%
+  group_by(cluster, Composition) %>%
+  summarize(mean_2_theta = mean(`2_theta`))
+
+# Find the composition with the lowest and highest mean 2_theta in each cluster
+lowest_2_theta <- cluster_composition_means %>%
+  slice(which.min(mean_2_theta))
+
+highest_2_theta <- cluster_composition_means %>%
+  slice(which.max(mean_2_theta))
+
+# Print the results
+cat("Composition with lowest mean 2_theta in each cluster:\n")
+print(lowest_2_theta)
+
+cat("\nComposition with highest mean 2_theta in each cluster:\n")
+print(highest_2_theta)
+
+# Summary table with mean 2_theta for each composition
+composition_summary <- non_zero_data_long %>%
+  group_by(Composition) %>%
+  summarise(mean_2_theta = mean(`2_theta`))
+
+# Identify composition with lowest and highest mean 2_theta
+lowest_composition <- composition_summary[
+  which.min(composition_summary$mean_2_theta),
+]
+
+# Bar plot for mean 2_theta for each composition
+bar_plot <- ggplot(composition_summary, aes(
+  x = mean_2_theta,
+  y = Composition, fill = Composition
+)) +
+  geom_bar(stat = "identity", color = "white", width = 0.7, alpha = 0.8) +
+  labs(
+    title = "Mean 2_theta for Each Composition",
+    x = "Mean 2_theta",
+    y = "Composition"
+  ) +
+  theme_minimal() +
+  scale_fill_manual(values = c(
+    "Co" = "skyblue",
+    "Ni25Co75" = "orange", "Ni50Co50" = "purple", "Ni75Co25" = "red"
+  ))
+
+# Print the bar plot
+print(bar_plot)
+ggsave("plot/mean_theta.png", width = 10, height = 5.625)
