@@ -42,7 +42,34 @@ ggplot(datab, aes(x = `2_theta`)) +
   )) +
   theme_minimal()
 
-ggsave("plot/graph_nb.png")
+ggsave("plot/graph_nb.png", width = 10, height = 5.625)
+
+ggplot(datab[240:340, ], aes(x = `2_theta`)) +
+  geom_ribbon(aes(ymin = 0, ymax = `Ni25Co75`, fill = "Ni25Co75"),
+    alpha = 0.1, color = "green"
+  ) +
+  geom_ribbon(aes(ymin = 0, ymax = `Ni50Co50`, fill = "Ni50Co50"),
+    alpha = 0.1, color = "red"
+  ) +
+  geom_ribbon(aes(ymin = 0, ymax = `Ni75Co25`, fill = "Ni75Co25"),
+    alpha = 0.1, color = "blue"
+  ) +
+  geom_ribbon(aes(ymin = 0, ymax = `Co`, fill = "Co"),
+    alpha = 0.1, color = "yellow"
+  ) +
+  labs(
+    title = "Powder X-Ray Diffraction of Ni_(1-x)Co_x perovskites",
+    x = "2 theta",
+    y = "Intensity",
+    fill = "Composition"
+  ) +
+  scale_fill_manual(values = c(
+    "Ni75Co25" = "blue", "Ni50Co50" = "red",
+    "Ni25Co75" = "green", "Co" = "yellow"
+  )) +
+  theme_minimal()
+
+ggsave("plot/graph_nb_zoom.png", width = 10, height = 5.625)
 
 data <- bind_cols(d1, d2$V2, d3$V2, d4$V2)
 
@@ -81,7 +108,7 @@ ggplot(data, aes(x = `2_theta`)) +
   )) +
   theme_minimal()
 
-ggsave("plot/graph.png")
+ggsave("plot/graph.png", width = 10, height = 5.625)
 
 find_peaks <- function(data) {
   if (length(data) < 2) {
@@ -143,7 +170,7 @@ ggplot(data_long, aes(x = `2_theta`, y = Condition, fill = Value)) +
   ) +
   theme_minimal()
 
-ggsave("plot/peaks.png", width = 10, height =  5.625)
+ggsave("plot/peaks.png", width = 10, height = 5.625)
 
 # Filter out zero values
 non_zero_data_long <- data_long[data_long$Value != 0, ]
@@ -212,3 +239,54 @@ for (i in unique(cluster_assignments)) {
 # Assuming anova_result is the result from your previous ANOVA
 residuals_within_clusters <- residuals(anova_result)
 print(residuals_within_clusters)
+
+# INTENSITY ANALYSIS
+
+ggplot(non_zero_data_long, aes(
+  x = factor(cluster),
+  y = Value, fill = factor(cluster)
+)) +
+  geom_boxplot() +
+  labs(
+    title = "Boxplot of the Intensity of the peaks for each cluster",
+    x = "Cluster",
+    y = "Your Variable"
+  ) +
+  theme_minimal()
+
+# Calculate mean and standard deviation for each Condition
+summary_stats <- non_zero_data_long %>%
+  group_by(Condition) %>%
+  summarize(
+    mean_value = mean(Value),
+    sd_value = sd(Value)
+  )
+
+# Identify conditions with lowest and highest mean and variance
+lowest_mean_condition <- summary_stats$Condition[which.min(summary_stats$mean_value)]
+lowest_sd_condition <- summary_stats$Condition[which.min(summary_stats$sd_value)]
+highest_mean_condition <- summary_stats$Condition[which.max(summary_stats$mean_value)]
+highest_sd_condition <- summary_stats$Condition[which.max(summary_stats$sd_value)]
+
+# Boxplot code
+boxplot_plot <- ggplot(non_zero_data_long, aes(x = factor(cluster), y = Value, fill = factor(cluster))) +
+  geom_boxplot() +
+  labs(
+    title = "Boxplot of Data Inside Clusters",
+    x = "Cluster",
+    y = "Value"
+  ) +
+  theme_minimal()
+
+# Add text annotations
+boxplot_plot +
+  annotate("text",
+    x = 2, y = max(non_zero_data_long$Value),
+    label = paste("Lowest Mean (", lowest_mean_condition, "):", round(summary_stats$mean_value[summary_stats$Condition == lowest_mean_condition], 2)),
+    vjust = 1.5, hjust = 0.5, size = 3, color = "red"
+  ) +
+  annotate("text",
+    x = length(unique(non_zero_data_long$cluster)) - 1.5, y = max(non_zero_data_long$Value),
+    label = paste("Highest Mean (", highest_mean_condition, "):", round(summary_stats$mean_value[summary_stats$Condition == highest_mean_condition], 2)),
+    vjust = 1.5, hjust = 0.5, size = 3, color = "blue"
+  ) 

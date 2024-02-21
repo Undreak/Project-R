@@ -1,4 +1,4 @@
-\documentclass{beamer}
+\documentclass[aspectratio=169]{beamer}
 
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
@@ -52,7 +52,7 @@
 \begin{frame}{Data Overview}
     \begin{itemize}
         \item Overview of the dataset: Peaks from different crystals with compositions and varying 2 theta values.
-        \item Key variables and their significance: `2_theta`, Condition, Value, and Cluster.
+        \item Key variables and their significance: `2_theta`, Composition, Value, and Cluster.
     \end{itemize}
 \end{frame}
 
@@ -112,7 +112,16 @@
 \begin{frame}{Visualization of the Data}
     \begin{figure}
         \centering
-        \includegraphics[width=0.8\textwidth]{../plot/graph_nb.png}
+        \includegraphics[width=1\textwidth]{../plot/graph_nb.png}
+        \caption{Powder X-ray Diffraction of Ni\_(1-x)Co\_x perovskites}
+        \label{fig:xrd}
+    \end{figure}
+\end{frame}
+
+\begin{frame}{Visualization of the Data}
+    \begin{figure}
+        \centering
+        \includegraphics[width=1\textwidth]{../plot/graph_nb_zoom.png}
         \caption{Powder X-ray Diffraction of Ni\_(1-x)Co\_x perovskites}
         \label{fig:xrd}
     \end{figure}
@@ -137,7 +146,7 @@
 \begin{frame}{Visualization of the Data}
     \begin{figure}
         \centering
-        \includegraphics[width=0.8\textwidth]{../plot/graph.png}
+        \includegraphics[width=1\textwidth]{../plot/graph.png}
         \caption{Powder X-ray Diffraction of Ni\_(1-x)Co\_x perovskites without background and with threshold value}
         \label{fig:xrd}
     \end{figure}
@@ -147,6 +156,10 @@
 
 
 \begin{frame}[fragile]{Peak Identification}
+    \begin{itemize}
+        \item Overview of the importance of identifying peaks in X-ray diffraction data.
+        \item Explanation of the methodology used for peak identification.
+    \end{itemize}
 
     \begin{lstlisting}[language=R, basicstyle=\tiny\ttfamily]
     find_peaks <- function(data) {
@@ -173,7 +186,7 @@
 
 \begin{frame}{Peak Identification Results}
     \begin{figure}
-        \includegraphics[width=1.1\textwidth]{../plot/peaks.png}
+        \includegraphics[width=1\textwidth]{../plot/peaks.png}
     \end{figure}
 \end{frame}
 
@@ -187,7 +200,16 @@
     \end{itemize}
 
     \begin{lstlisting}[language=R, basicstyle=\small\ttfamily]
-    # Your clustering code here
+    
+# Specify the number of clusters (k)
+      k <- 10
+
+# Perform k-means clustering based only on 2_theta
+      cluster_assignments <- kmeans(data_for_clustering,
+        centers = k,
+        nstart = 4
+      )$cluster
+
     \end{lstlisting}
 \end{frame}
 
@@ -198,7 +220,7 @@
     \end{itemize}
 
     \begin{figure}
-        \includegraphics[width=0.7\textwidth]{cluster_plot.png}
+        \includegraphics[width=0.5\textwidth]{../plot/peak_clusters.png}
         \caption{Clustering results visualized.}
     \end{figure}
 \end{frame}
@@ -216,10 +238,55 @@
 
     \begin{lstlisting}[language=R]
     # ANOVA Testing
-    anova_result <- aov(`2_theta` ~ Condition * Cluster, data = data_long)
+    anova_result <- aov(`2_theta` ~ Composition * Cluster, data = data_long)
     summary(anova_result)
     \end{lstlisting}
 \end{frame}
+
+
+\begin{frame}{Peak Intensity}
+    \begin{itemize}
+        \item Powder X-ray Diffraction (PXRD) data often contains peaks that correspond to specific crystallographic planes.
+        \item Peak intensity is a crucial parameter in PXRD analysis, reflecting the abundance or concentration of particular crystallographic phases.
+    \end{itemize}
+
+    \begin{figure}
+        \includegraphics[width=0.7\textwidth]{../plot/intensity.png}
+        \caption{Example of Powder X-ray Diffraction Peaks and Intensity.}
+    \end{figure}
+
+    \begin{itemize}
+        \item Understanding peak intensity variations provides insights into material composition and structural characteristics.
+        \item Our analysis focuses on identifying, characterizing, and comparing peak intensities in the given dataset.
+    \end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]{ANOVA Results}
+    \begin{itemize}
+        \item Analysis of Variance (ANOVA) was performed to assess the impact of 'Composition' and 'cluster' on the 'Value' variable.
+        \item Statistical significance was evaluated based on p-values.
+    \end{itemize}
+
+    \begin{lstlisting}[language=R, basicstyle=\tiny\ttfamily]
+    > summary(anova_result)
+                        Df Sum Sq Mean Sq F value   Pr(>F)    
+      Composition          3   9496    3165   14.80 0.012440 *  
+      cluster            9 220856   24540  114.78 0.000182 ***
+      Composition:cluster 21  31651    1507    7.05 0.035380 *  
+      Residuals          4    855     214                     
+      ---
+      Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1   
+\end{lstlisting}
+
+    \begin{itemize}
+        \item \textbf{Composition:} The p-value (0.012440) indicates a significant difference in means across 'Composition' levels.
+        \item \textbf{Cluster:} A very low p-value (0.000182) suggests significant differences in means across clusters.
+        \item \textbf{Interaction:} The interaction between 'Composition' and 'cluster' is significant (p-value = 0.035380).
+    \end{itemize}
+\end{frame}
+
+
 
 \begin{frame}{Results and Discussion}
     \begin{itemize}

@@ -1,11 +1,22 @@
-\frametitle{ANOVA Testing}
+\frametitle{ANOVA Results}
 \begin{itemize}
-        \item Analysis of Variance (ANOVA) to test hypotheses.
-        \item Results and interpretation.
+        \item Analysis of Variance (ANOVA) was performed to assess the impact of 'Composition' and 'cluster' on the 'Value' variable.
+        \item Statistical significance was evaluated based on p-values.
     \end{itemize}
 
-    \begin{lstlisting}[language=R]
-    # ANOVA Testing
-    anova_result <- aov(`2_theta` ~ Condition * Cluster, data = data_long)
-    summary(anova_result)
-    \end{lstlisting}
+    \begin{lstlisting}[language=R, basicstyle=\tiny\ttfamily]
+    > summary(anova_result)
+                        Df Sum Sq Mean Sq F value   Pr(>F)
+      Composition          3   9496    3165   14.80 0.012440 *
+      cluster            9 220856   24540  114.78 0.000182 ***
+      Composition:cluster 21  31651    1507    7.05 0.035380 *
+      Residuals          4    855     214
+      ---
+      Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+\end{lstlisting}
+
+    \begin{itemize}
+        \item \textbf{Composition:} The p-value (0.012440) indicates a significant difference in means across 'Composition' levels.
+        \item \textbf{Cluster:} A very low p-value (0.000182) suggests significant differences in means across clusters.
+        \item \textbf{Interaction:} The interaction between 'Composition' and 'cluster' is significant (p-value = 0.035380).
+    \end{itemize}
