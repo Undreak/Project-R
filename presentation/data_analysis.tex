@@ -43,16 +43,16 @@
 
 \begin{frame}{Introduction}
     \begin{itemize}
-        \item Brief overview of the data analysis project.
-        \item Importance of the analysis: Understanding the shift in peak positions in crystals of different compositions.
-        \item Objectives and hypotheses: Investigating if there are significant differences in peak positions among crystals.
+        \item Analyze the powder X-ray diffraction data,
+        \item Objectives and hypotheses: Investigating if there are significant differences in peak positions and intensity among crystals,
+        \item Importance of the analysis: Understanding the change in structure of the crystals when changing the composition.
     \end{itemize}
 \end{frame}
 
 \begin{frame}{Data Overview}
     \begin{itemize}
         \item Overview of the dataset: Peaks from different crystals with compositions and varying 2 theta values.
-        \item Key variables and their significance: `2_theta`, Composition, Value, and Cluster.
+        \item Key variables and their significance: `2_theta`, Composition, Intensity, and Cluster.
     \end{itemize}
 \end{frame}
 
@@ -225,22 +225,53 @@
     \end{figure}
 \end{frame}
 
-
-
-
-
-
-\begin{frame}[fragile]{ANOVA Testing}
+\begin{frame}{Clustering Results}
     \begin{itemize}
-        \item Analysis of Variance (ANOVA) to test hypotheses.
-        \item Results and interpretation.
+        \item Overview of the clustering results.
+        \item Interpretation of clusters and their characteristics.
     \end{itemize}
 
-    \begin{lstlisting}[language=R]
-    # ANOVA Testing
-    anova_result <- aov(`2_theta` ~ Composition * Cluster, data = data_long)
-    summary(anova_result)
-    \end{lstlisting}
+    \begin{figure}
+        \includegraphics[width=0.85\textwidth]{../plot/theta.png}
+        \caption{Clustering results visualized.}
+    \end{figure}
+\end{frame}
+
+\begin{frame}[fragile]{ANOVA Results}
+  \begin{lstlisting}[language=R, basicstyle=\small\ttfamily]
+  # Perform ANOVA
+  anova_result_composition <- aov(`2_theta` ~ Composition * cluster, data = non_zero_data_long)
+  
+  # Print ANOVA summary
+  summary(anova_result_composition)
+  \end{lstlisting}
+\end{frame}
+
+
+\begin{frame}{ANOVA Results}
+  \begin{table}[]
+    \centering
+    \begin{tabular}{lcccccc}
+      \hline
+      \textbf{Factor} & \textbf{Df} & \textbf{Sum Sq} & \textbf{Mean Sq} & \textbf{F Intensity} & \textbf{Pr(>F)} \\
+      \hline
+      Composition & 3 & 0.5 & 0.15 & 5.137 & 0.0286* \\
+      Cluster & 9 & 1103.8 & 122.65 & 4175.310 & $1.03 \times 10^{-13}$*** \\
+      Composition:Cluster & 17 & 0.0 & 0.00 & 0.066 & 1.0000 \\
+      Residuals & 8 & 0.2 & 0.03 & & \\
+      \hline
+    \end{tabular}
+  \end{table}
+  Signif. codes: 0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+\end{frame}
+
+\begin{frame}{Analysis of ANOVA Results}
+  \begin{itemize}
+    \item The Composition factor shows a significant effect on the response variable (p-value = 0.0286).
+    \item The Cluster factor has a highly significant impact on the response variable (p-value = $1.03 \times 10^{-13}$).
+    \item The interaction between Composition and Cluster is not significant (p-value = 1.0000).
+    \item Residuals indicate the unexplained variance in the model.
+  \end{itemize}
 \end{frame}
 
 
@@ -264,12 +295,15 @@
 
 \begin{frame}[fragile]{ANOVA Results}
     \begin{itemize}
-        \item Analysis of Variance (ANOVA) was performed to assess the impact of 'Composition' and 'cluster' on the 'Value' variable.
+        \item Analysis of Variance (ANOVA) was performed to assess the impact of 'Composition' and 'cluster' on the 'Intensity' variable.
         \item Statistical significance was evaluated based on p-values.
     \end{itemize}
 
     \begin{lstlisting}[language=R, basicstyle=\tiny\ttfamily]
-    > summary(anova_result)
+      > anova_result <- aov(Intensity ~ Composition * cluster, data = non_zero_data_long)
+
+
+      > summary(anova_result)
                         Df Sum Sq Mean Sq F value   Pr(>F)    
       Composition          3   9496    3165   14.80 0.012440 *  
       cluster            9 220856   24540  114.78 0.000182 ***
@@ -296,12 +330,32 @@
     \end{itemize}
 \end{frame}
 
+
+
 \begin{frame}{Conclusion}
-    \begin{itemize}
-        \item Summary of key findings.
-        \item Limitations and areas for future research.
-    \end{itemize}
+  \begin{columns}
+    \begin{column}{0.5\textwidth}
+      \centering
+      \textbf{\textcolor{blue}{Summary of key findings.}}
+      \begin{itemize}
+        \item Peak position,
+        \item Intensity.
+      \end{itemize}
+    \end{column}
+    
+    \begin{column}{0.5\textwidth}
+      \centering
+      \textbf{\textcolor{red}{Limitations and areas for future research.}}
+      \begin{itemize}
+        \item \textbf{Ni} composition for further analysis,
+        \item Improve the peak finding algorithm,
+        \item Random variability in the clustering process.
+      \end{itemize}
+    \end{column}
+  \end{columns}
 \end{frame}
+
+
 
 \begin{frame}{Questions \& Discussion}
     \centering

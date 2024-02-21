@@ -155,11 +155,11 @@ data_long <- pivot_longer(data_peaks,
 data_long <- data_peaks %>%
   pivot_longer(
     cols = -c(`2_theta`),
-    names_to = "Condition", values_to = "Value"
+    names_to = "Composition", values_to = "Intensity"
   )
 
 # Plot using ggplot2 with geom_tile
-ggplot(data_long, aes(x = `2_theta`, y = Condition, fill = Value)) +
+ggplot(data_long, aes(x = `2_theta`, y = Composition, fill = Intensity)) +
   geom_tile(color = "white") +
   scale_fill_gradient(low = "white", high = "blue") +
   labs(
@@ -173,11 +173,11 @@ ggplot(data_long, aes(x = `2_theta`, y = Condition, fill = Value)) +
 ggsave("plot/peaks.png", width = 10, height = 5.625)
 
 # Filter out zero values
-non_zero_data_long <- data_long[data_long$Value != 0, ]
+non_zero_data_long <- data_long[data_long$Intensity != 0, ]
 
 # Perform clustering (replace k with your desired number of clusters)
 
-# Assuming data_long has columns "2_theta" and "Value"
+# Assuming data_long has columns "2_theta" and "Intensity"
 data_for_clustering <- non_zero_data_long[, "2_theta",
   drop = FALSE
 ] # Drop = FALSE ensures it remains a data frame
@@ -201,12 +201,12 @@ non_zero_data_long$cluster <- factor(non_zero_data_long$cluster)
 # Plot using ggplot2 with geom_tile and discrete fill scale
 ggplot(non_zero_data_long, aes(
   x = `2_theta`,
-  y = Condition, fill = cluster
+  y = Composition, fill = cluster
 )) +
   geom_tile(color = "white") +
   scale_fill_discrete() + # Use discrete fill scale
   labs(
-    title = "Heatmap of Non-Zero Values",
+    title = "Heatmap of Non-Zero Intensitys",
     x = "2_theta",
     y = "Composition",
     fill = "Peak"
@@ -217,10 +217,33 @@ ggplot(non_zero_data_long, aes(
 #       CLUSTERING IS TOO RANDOM
 
 # Perform ANOVA
-anova_result <- aov(`2_theta` ~ Condition * cluster, data = non_zero_data_long)
+anova_result <- aov(`2_theta` ~ Composition * cluster,
+  data = non_zero_data_long
+)
 
 # Print ANOVA summary
 summary(anova_result)
+
+
+# Get the number of unique clusters
+num_clusters <- length(unique(non_zero_data_long$cluster))
+
+# Create a boxplot with Composition and cluster information
+ggplot(non_zero_data_long, aes(
+  x = `2_theta`, y = factor(cluster),
+  fill = factor(cluster)
+)) +
+  geom_boxplot() +
+  labs(
+    title = "Boxplot of 2_theta Across Composition Levels and Clusters",
+    x = "2 theta",
+    y = "Cluster"
+  ) +
+  scale_fill_manual(values = rainbow(num_clusters)) +
+  # Use rainbow color palette
+  theme_minimal()
+
+ggsave("plot/theta.png", width = 10, height = 5.625)
 
 # WARNING: WEIRD RESULTS
 
@@ -229,7 +252,7 @@ for (i in unique(cluster_assignments)) {
   cluster_data <- non_zero_data_long[cluster_assignments == i, ]
 
   # Perform ANOVA within each cluster
-  anova_within_cluster <- aov(`2_theta` ~ Condition, data = cluster_data)
+  anova_within_cluster <- aov(`2_theta` ~ Composition, data = cluster_data)
 
   # Print summary for each cluster
   cat(paste("Cluster", i, "\n"))
@@ -244,7 +267,7 @@ print(residuals_within_clusters)
 
 ggplot(non_zero_data_long, aes(
   x = factor(cluster),
-  y = Value, fill = factor(cluster)
+  y = Intensity, fill = factor(cluster)
 )) +
   geom_boxplot() +
   labs(
@@ -254,39 +277,69 @@ ggplot(non_zero_data_long, aes(
   ) +
   theme_minimal()
 
-# Calculate mean and standard deviation for each Condition
+# Calculate mean and standard deviation for each Composition
 summary_stats <- non_zero_data_long %>%
-  group_by(Condition) %>%
+  group_by(Composition) %>%
   summarize(
-    mean_value = mean(Value),
-    sd_value = sd(Value)
+    mean_value = mean(Intensity),
+    sd_value = sd(Intensity)
   )
 
 # Identify conditions with lowest and highest mean and variance
-lowest_mean_condition <- summary_stats$Condition[which.min(summary_stats$mean_value)]
-lowest_sd_condition <- summary_stats$Condition[which.min(summary_stats$sd_value)]
-highest_mean_condition <- summary_stats$Condition[which.max(summary_stats$mean_value)]
-highest_sd_condition <- summary_stats$Condition[which.max(summary_stats$sd_value)]
+lowest_mean_condition <- summary_stats$Composition[
+  which.min(summary_stats$mean_value)
+]
+lowest_sd_condition <- summary_stats$Composition[
+  which.min(summary_stats$sd_value)
+]
+highest_mean_condition <- summary_stats$Composition[
+  which.max(summary_stats$mean_value)
+]
+highest_sd_condition <- summary_stats$Composition[
+  which.max(summary_stats$sd_value)
+]
 
 # Boxplot code
-boxplot_plot <- ggplot(non_zero_data_long, aes(x = factor(cluster), y = Value, fill = factor(cluster))) +
+boxplot_plot <- ggplot(non_zero_data_long, aes(
+  x = factor(cluster),
+  y = Intensity, fill = factor(cluster)
+)) +
   geom_boxplot() +
   labs(
-    title = "Boxplot of Data Inside Clusters",
+    title = "Boxplot of the Intensity of the peaks for each cluster",
     x = "Cluster",
-    y = "Value"
+    y = "Intensity"
   ) +
   theme_minimal()
 
 # Add text annotations
 boxplot_plot +
   annotate("text",
-    x = 2, y = max(non_zero_data_long$Value),
-    label = paste("Lowest Mean (", lowest_mean_condition, "):", round(summary_stats$mean_value[summary_stats$Condition == lowest_mean_condition], 2)),
+    x = 2, y = max(non_zero_data_long$Intensity),
+    label = paste(
+      "Lowest Mean (", lowest_mean_condition, "):",
+      round(summary_stats$mean_value[
+        summary_stats$Composition == lowest_mean_condition
+      ], 2)
+    ),
     vjust = 1.5, hjust = 0.5, size = 3, color = "red"
   ) +
   annotate("text",
-    x = length(unique(non_zero_data_long$cluster)) - 1.5, y = max(non_zero_data_long$Value),
-    label = paste("Highest Mean (", highest_mean_condition, "):", round(summary_stats$mean_value[summary_stats$Condition == highest_mean_condition], 2)),
+    x = length(unique(non_zero_data_long$cluster)) - 1.5,
+    y = max(non_zero_data_long$Intensity),
+    label = paste(
+      "Highest Mean (", highest_mean_condition, "):",
+      round(summary_stats$mean_value[
+        summary_stats$Composition == highest_mean_condition
+      ], 2)
+    ),
     vjust = 1.5, hjust = 0.5, size = 3, color = "blue"
-  ) 
+  )
+
+ggsave("plot/intensity.png", width = 10, height = 5.625)
+
+# Perform ANOVA
+anova_result <- aov(Intensity ~ Composition * cluster, data = non_zero_data_long)
+
+# Print ANOVA summary
+summary(anova_result)

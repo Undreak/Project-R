@@ -1,11 +1,14 @@
 \frametitle{ANOVA Results}
 \begin{itemize}
-        \item Analysis of Variance (ANOVA) was performed to assess the impact of 'Composition' and 'cluster' on the 'Value' variable.
+        \item Analysis of Variance (ANOVA) was performed to assess the impact of 'Composition' and 'cluster' on the 'Intensity' variable.
         \item Statistical significance was evaluated based on p-values.
     \end{itemize}
 
     \begin{lstlisting}[language=R, basicstyle=\tiny\ttfamily]
-    > summary(anova_result)
+      > anova_result <- aov(Intensity ~ Composition * cluster, data = non_zero_data_long)
+
+
+      > summary(anova_result)
                         Df Sum Sq Mean Sq F value   Pr(>F)
       Composition          3   9496    3165   14.80 0.012440 *
       cluster            9 220856   24540  114.78 0.000182 ***
