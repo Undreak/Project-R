@@ -43,23 +43,16 @@
 
 \begin{frame}{Introduction}
     \begin{itemize}
-        \item Analyze the powder X-ray diffraction data,
+        \item Analyze the powder X-ray diffraction data from Complex Materials,
         \item Objectives and hypotheses: Investigating if there are significant differences in peak positions and intensity among crystals,
         \item Importance of the analysis: Understanding the change in structure of the crystals when changing the composition.
     \end{itemize}
 \end{frame}
 
-\begin{frame}{Data Overview}
+\begin{frame}[fragile]{Data Processing}
     \begin{itemize}
-        \item Overview of the dataset: Peaks from different crystals with compositions and varying 2 theta values.
-        \item Key variables and their significance: `2_theta`, Composition, Intensity, and Cluster.
-    \end{itemize}
-\end{frame}
-
-\begin{frame}[fragile]{Data Preprocessing}
-    \begin{itemize}
-        \item Cleaning and handling missing values.
-        \item Transformation of data for analysis.
+        \item Exporting the data from MATCH!
+        \item Importing the data with R.
     \end{itemize}
 
     \begin{lstlisting}[language=R]
@@ -112,7 +105,7 @@
 \begin{frame}{Visualization of the Data}
     \begin{figure}
         \centering
-        \includegraphics[width=1\textwidth]{../plot/graph_nb.png}
+        \includegraphics[width=1\textwidth]{../plot/graph_nt.png}
         \caption{Powder X-ray Diffraction of Ni\_(1-x)Co\_x perovskites}
         \label{fig:xrd}
     \end{figure}
@@ -121,7 +114,7 @@
 \begin{frame}{Visualization of the Data}
     \begin{figure}
         \centering
-        \includegraphics[width=1\textwidth]{../plot/graph_nb_zoom.png}
+        \includegraphics[width=1\textwidth]{../plot/graph_nt_zoom.png}
         \caption{Powder X-ray Diffraction of Ni\_(1-x)Co\_x perovskites}
         \label{fig:xrd}
     \end{figure}
@@ -156,10 +149,6 @@
 
 
 \begin{frame}[fragile]{Peak Identification}
-    \begin{itemize}
-        \item Overview of the importance of identifying peaks in X-ray diffraction data.
-        \item Explanation of the methodology used for peak identification.
-    \end{itemize}
 
     \begin{lstlisting}[language=R, basicstyle=\tiny\ttfamily]
     find_peaks <- function(data) {
@@ -195,14 +184,13 @@
 
 \begin{frame}[fragile]{Clustering Process}
     \begin{itemize}
-        \item Explanation of the clustering algorithm used.
-        \item Description of the data preparation steps.
+        \item K-means clusters data by iteratively assigning points to the nearest cluster center and updating those centers until convergence, aiming to group similar points together.
     \end{itemize}
 
     \begin{lstlisting}[language=R, basicstyle=\small\ttfamily]
     
 # Specify the number of clusters (k)
-      k <- 10
+      k <- 22
 
 # Perform k-means clustering based only on 2_theta
       cluster_assignments <- kmeans(data_for_clustering,
@@ -220,7 +208,7 @@
     \end{itemize}
 
     \begin{figure}
-        \includegraphics[width=0.5\textwidth]{../plot/peak_clusters.png}
+        \includegraphics[width=0.85\textwidth]{../plot/peak_clusters.png}
         \caption{Clustering results visualized.}
     \end{figure}
 \end{frame}
@@ -237,7 +225,19 @@
     \end{figure}
 \end{frame}
 
-\begin{frame}[fragile]{ANOVA Results}
+\begin{frame}{Clustering Results}
+    \begin{itemize}
+        \item Overview of the clustering results.
+        \item Interpretation of clusters and their characteristics.
+    \end{itemize}
+
+    \begin{figure}
+        \includegraphics[width=0.85\textwidth]{../plot/theta_zoom.png}
+        \caption{Clustering results visualized.}
+    \end{figure}
+\end{frame}
+
+\begin{frame}[fragile]{ANOVA Test}
   \begin{lstlisting}[language=R, basicstyle=\small\ttfamily]
   # Perform ANOVA
   anova_result_composition <- aov(`2_theta` ~ Composition * cluster, data = non_zero_data_long)
@@ -249,26 +249,29 @@
 
 
 \begin{frame}{ANOVA Results}
-  \begin{table}[]
-    \centering
-    \begin{tabular}{lcccccc}
-      \hline
-      \textbf{Factor} & \textbf{Df} & \textbf{Sum Sq} & \textbf{Mean Sq} & \textbf{F Intensity} & \textbf{Pr(>F)} \\
-      \hline
-      Composition & 3 & 0.5 & 0.15 & 5.137 & 0.0286* \\
-      Cluster & 9 & 1103.8 & 122.65 & 4175.310 & $1.03 \times 10^{-13}$*** \\
-      Composition:Cluster & 17 & 0.0 & 0.00 & 0.066 & 1.0000 \\
-      Residuals & 8 & 0.2 & 0.03 & & \\
-      \hline
-    \end{tabular}
-  \end{table}
-  Signif. codes: 0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+  
+\begin{table}[ht]
+\centering
+\begin{tabular}{lcccccc}
+\toprule
+\textbf{Source} & \textbf{Df} & \textbf{Sum Sq} & \textbf{Mean Sq} & \textbf{F Value} & \textbf{Pr(>F)} \\
+\midrule
+Composition & 3 & 156.5 & 52.15 & 81.746 & 0.000114*** \\
+Cluster & 15 & 2896.1 & 193.08 & 302.627 & 2.33e-06*** \\
+Composition:cluster & 31 & 0.9 & 0.03 & 0.044 & 1.000000 \\
+Residuals & 5 & 3.2 & 0.64 & & \\
+\bottomrule
+\end{tabular}
+\caption{ANOVA Results for \texttt{2theta} with Composition and Cluster.}
+\label{tab:anova_results}
+\end{table}
+
 \end{frame}
 
 \begin{frame}{Analysis of ANOVA Results}
   \begin{itemize}
-    \item The Composition factor shows a significant effect on the response variable (p-value = 0.0286).
-    \item The Cluster factor has a highly significant impact on the response variable (p-value = $1.03 \times 10^{-13}$).
+    \item The Composition factor shows a significant effect on the response variable (p-value = 0.000114).
+    \item The Cluster factor has a highly significant impact on the response variable (p-value = 2.33e-06).
     \item The interaction between Composition and Cluster is not significant (p-value = 1.0000).
     \item Residuals indicate the unexplained variance in the model.
   \end{itemize}
@@ -282,7 +285,7 @@
     \end{itemize}
 
     \begin{figure}
-        \includegraphics[width=0.7\textwidth]{../plot/intensity.png}
+        \includegraphics[width=0.8\textwidth]{../plot/intensity.png}
         \caption{Example of Powder X-ray Diffraction Peaks and Intensity.}
     \end{figure}
 
@@ -292,6 +295,23 @@
     \end{itemize}
 \end{frame}
 
+\begin{frame}[fragile]{Peak Intensity Analysis}
+\begin{table}[h]
+\centering
+\begin{tabular}{lcc}
+\toprule
+Composition & Mean Intensity & Variance Intensity \\
+\midrule
+Co          & 99.8       & 3653.0        \\
+Ni25Co75    & 116.0      & 8636.0        \\
+Ni50Co50    & 104.0      & 8514.0        \\
+Ni75Co25    & 109.0      & 6062.0        \\
+\bottomrule
+\end{tabular}
+\caption{Mean and Variance Intensities for Each Composition.}
+\label{tab:composition_stats}
+\end{table}
+\end{frame}
 
 \begin{frame}[fragile]{ANOVA Results}
     \begin{itemize}
@@ -304,15 +324,27 @@
 
 
       > summary(anova_result)
-                        Df Sum Sq Mean Sq F value   Pr(>F)    
-      Composition          3   9496    3165   14.80 0.012440 *  
-      cluster            9 220856   24540  114.78 0.000182 ***
-      Composition:cluster 21  31651    1507    7.05 0.035380 *  
-      Residuals          4    855     214                     
-      ---
-      Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1   
+
 \end{lstlisting}
 
+\begin{table}[h]
+\centering
+\begin{tabular}{lcccccc}
+\hline
+\textbf{Factor} & \textbf{Df} & \textbf{Sum Sq} & \textbf{Mean Sq} & \textbf{F value} & \textbf{Pr(>F)} \\
+\hline
+\textbf{Composition} & 3 & 9496 & 3165 & 14.80 & 0.012440* \\
+\textbf{Cluster} & 9 & 220856 & 24540 & 114.78 & 0.000182*** \\
+\textbf{Composition:Cluster} & 21 & 31651 & 1507 & 7.05 & 0.035380* \\
+\textbf{Residuals} & 4 & 855 & 214 & -- & -- \\
+\hline
+\end{tabular}
+\caption{ANOVA Summary}
+\label{tab:anova_summary}
+\end{table}
+\end{frame}
+
+\begin{frame}[fragile]{ANOVA Results}
     \begin{itemize}
         \item \textbf{Composition:} The p-value (0.012440) indicates a significant difference in means across 'Composition' levels.
         \item \textbf{Cluster:} A very low p-value (0.000182) suggests significant differences in means across clusters.
@@ -322,15 +354,6 @@
 
 
 
-\begin{frame}{Results and Discussion}
-    \begin{itemize}
-        \item Interpretation of ANOVA results.
-        \item Comparison of clusters: Assessing the significance of peak position variations.
-        \item Implications of the findings: Understanding how composition affects peak positions.
-    \end{itemize}
-\end{frame}
-
-
 
 \begin{frame}{Conclusion}
   \begin{columns}
@@ -338,8 +361,8 @@
       \centering
       \textbf{\textcolor{blue}{Summary of key findings.}}
       \begin{itemize}
-        \item Peak position,
-        \item Intensity.
+        \item Significant peak position and intensity variation depending on the composition,
+        \item Implies a change in the cristalline structure of the material. 
       \end{itemize}
     \end{column}
     
