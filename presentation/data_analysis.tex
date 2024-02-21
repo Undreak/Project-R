@@ -63,10 +63,14 @@
     \end{itemize}
 
     \begin{lstlisting}[language=R]
-    # Cleaning and transformation
-    data_clean <- na.omit(data_peaks)
-    data_long <- pivot_longer(data_clean, cols = -c(`2_theta`, Condition), 
-                              names_to = "Cluster", values_to = "Value")
+    > head(data)
+      2_theta Ni75Co25 Ni50Co50 Ni25Co75   Co
+    1    8.00     20.0    18.00    24.00 19.0
+    2    8.05     19.5    21.98    23.01 20.5
+    3    8.10     19.0    26.00    22.00 22.0
+    4    8.15     19.0    27.49    21.50 25.0
+    5    8.20     19.0    29.00    21.00 28.0
+    6    8.25     17.0    24.53    24.98 24.5
     \end{lstlisting}
 \end{frame}
 
@@ -105,15 +109,104 @@
     \end{lstlisting}
 \end{frame}
 
-
-\begin{frame}{Visualization of X-ray Diffraction}
+\begin{frame}{Visualization of the Data}
     \begin{figure}
         \centering
-        \includegraphics[width=0.8\textwidth]{../plot/graph.png}
+        \includegraphics[width=0.8\textwidth]{../plot/graph_nb.png}
         \caption{Powder X-ray Diffraction of Ni\_(1-x)Co\_x perovskites}
         \label{fig:xrd}
     \end{figure}
 \end{frame}
+
+\begin{frame}[fragile]{Exploratory Data Analysis}
+    \begin{itemize}
+        \item Visualizations and summary statistics.
+        \item Identification of patterns and trends.
+    \end{itemize}
+
+    \begin{lstlisting}[language=R, basicstyle=\tiny\ttfamily]
+      #Threshold value
+        +
+      geom_hline(
+        yintercept = threshold,
+        linetype = "dashed", color = "black"
+      )
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}{Visualization of the Data}
+    \begin{figure}
+        \centering
+        \includegraphics[width=0.8\textwidth]{../plot/graph.png}
+        \caption{Powder X-ray Diffraction of Ni\_(1-x)Co\_x perovskites without background and with threshold value}
+        \label{fig:xrd}
+    \end{figure}
+\end{frame}
+
+
+
+
+\begin{frame}[fragile]{Peak Identification}
+
+    \begin{lstlisting}[language=R, basicstyle=\tiny\ttfamily]
+    find_peaks <- function(data) {
+      if (length(data) < 2) {
+        return(NULL) # No peak in lists with 0 or 1 element
+      }
+      peaks <- rep(0, length(data))
+      # Create a vector to store the value and index of the peaks
+      for (i in 2:(length(data) - 1)) {
+        if (data[i] > data[i - 1] && data[i] > data[i + 1]) { # Looking for a peak
+          peaks[i] <- data[i]
+        }
+      }
+      # Checking if the first and last value is a peak or not
+      if (data[1] > data[2]) {
+        peaks[1] <- data[1]
+      }
+      if (tail(data, 1) > tail(data, 2)[1]) {
+        peaks[length(peaks)] <- data[length(data)]
+      }
+      return(peaks)
+      }    \end{lstlisting}
+\end{frame}
+
+\begin{frame}{Peak Identification Results}
+    \begin{figure}
+        \includegraphics[width=1.1\textwidth]{../plot/peaks.png}
+    \end{figure}
+\end{frame}
+
+
+
+
+\begin{frame}[fragile]{Clustering Process}
+    \begin{itemize}
+        \item Explanation of the clustering algorithm used.
+        \item Description of the data preparation steps.
+    \end{itemize}
+
+    \begin{lstlisting}[language=R, basicstyle=\small\ttfamily]
+    # Your clustering code here
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}{Clustering Results}
+    \begin{itemize}
+        \item Overview of the clustering results.
+        \item Interpretation of clusters and their characteristics.
+    \end{itemize}
+
+    \begin{figure}
+        \includegraphics[width=0.7\textwidth]{cluster_plot.png}
+        \caption{Clustering results visualized.}
+    \end{figure}
+\end{frame}
+
+
+
+
+
 
 \begin{frame}[fragile]{ANOVA Testing}
     \begin{itemize}

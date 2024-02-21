@@ -42,6 +42,8 @@ ggplot(datab, aes(x = `2_theta`)) +
   )) +
   theme_minimal()
 
+ggsave("plot/graph_nb.png")
+
 data <- bind_cols(d1, d2$V2, d3$V2, d4$V2)
 
 colnames(data) <- c("2_theta", "Ni75Co25", "Ni50Co50", "Ni25Co75", "Co")
@@ -128,6 +130,20 @@ data_long <- data_peaks %>%
     cols = -c(`2_theta`),
     names_to = "Condition", values_to = "Value"
   )
+
+# Plot using ggplot2 with geom_tile
+ggplot(data_long, aes(x = `2_theta`, y = Condition, fill = Value)) +
+  geom_tile(color = "white") +
+  scale_fill_gradient(low = "white", high = "blue") +
+  labs(
+    title = "Peaks Position and Intensity",
+    x = "2 theta",
+    y = "Composition",
+    fill = "Intensity"
+  ) +
+  theme_minimal()
+
+ggsave("plot/peaks.png", width = 10, height =  5.625)
 
 # Filter out zero values
 non_zero_data_long <- data_long[data_long$Value != 0, ]
