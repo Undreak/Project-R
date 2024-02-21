@@ -1,0 +1,11 @@
+\frametitle{ANOVA Testing}
+\begin{itemize}
+        \item Analysis of Variance (ANOVA) to test hypotheses.
+        \item Results and interpretation.
+    \end{itemize}
+
+    \begin{lstlisting}[language=R]
+    # ANOVA Testing
+    anova_result <- aov(`2_theta` ~ Condition * Cluster, data = data_long)
+    summary(anova_result)
+    \end{lstlisting}
