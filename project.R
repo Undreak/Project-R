@@ -1,23 +1,24 @@
 library(tidyverse)
+# Utilizing tidyverse (ggplot2, tidyr, dplyr) for streamlined data manipulation
+# and visualization.
+# Packages Used:
+# - ggplot2: Data visualization with a focus on grammar of graphics.
+# - tidyr: Tools for cleaning and reshaping data.
+# - dplyr: A grammar of data manipulation for data wrangling.
 
-d1b <- read.table("data/AD Ni75Co25.dat")
-d2b <- read.table("data/AR cO50nI50.dat")
-d3b <- read.table("data/JGD Co75Ni25.dat")
-d4b <- read.table("data/AD Co.dat")
-
-# No background
-d1 <- read.table("data/AD Ni75Co25_nb.dat")
-d2 <- read.table("data/AR cO50nI50_nb.dat")
-d3 <- read.table("data/JGD Co75Ni25_nb.dat")
-d4 <- read.table("data/AD Co_nb.dat")
+# NOTE: DATA ARE STORED IN THE DATA FOLDER
+d1 <- read.table("data/AD Ni75Co25.dat")
+d2 <- read.table("data/AR cO50nI50.dat")
+d3 <- read.table("data/JGD Co75Ni25.dat")
+d4 <- read.table("data/AD Co.dat")
 
 # TODO: ADD Ni REF DATA AND SUBSAMPLE IT TO FIT
 
-datab <- bind_cols(d1b, d2b$V2, d3b$V2, d4b$V2)
+data <- bind_cols(d1, d2$V2, d3$V2, d4$V2)
 
-colnames(datab) <- c("2_theta", "Ni75Co25", "Ni50Co50", "Ni25Co75", "Co")
+colnames(data) <- c("2_theta", "Ni75Co25", "Ni50Co50", "Ni25Co75", "Co")
 
-ggplot(datab, aes(x = `2_theta`)) +
+ggplot(data, aes(x = `2_theta`)) +
   geom_ribbon(aes(ymin = 0, ymax = `Ni25Co75`, fill = "Ni25Co75"),
     alpha = 0.1, color = "green"
   ) +
@@ -42,9 +43,10 @@ ggplot(datab, aes(x = `2_theta`)) +
   )) +
   theme_minimal()
 
+# NOTE: PLOT ARE STORED IN THE PLOT FOLDER
 ggsave("plot/graph_nt.png", width = 10, height = 5.625)
 
-ggplot(datab[240:340, ], aes(x = `2_theta`)) +
+ggplot(data[240:340, ], aes(x = `2_theta`)) +
   geom_ribbon(aes(ymin = 0, ymax = `Ni25Co75`, fill = "Ni25Co75"),
     alpha = 0.1, color = "green"
   ) +
@@ -79,7 +81,7 @@ colnames(data) <- c("2_theta", "Ni75Co25", "Ni50Co50", "Ni25Co75", "Co")
 threshold <- 40
 # PERF: FIND BEST THRESHOLD VALUE
 
-ggplot(datab, aes(x = `2_theta`)) +
+ggplot(data, aes(x = `2_theta`)) +
   geom_ribbon(aes(ymin = 0, ymax = `Ni25Co75`, fill = "Ni25Co75"),
     alpha = 0.1, color = "green"
   ) +
@@ -132,11 +134,11 @@ find_peaks <- function(data) {
 }
 
 data_peaks <- data.frame(
-  x = datab$"2_theta",
-  y1 = find_peaks(datab$Ni75Co25), # Curve data
-  y2 = find_peaks(datab$Ni50Co50), # Point data 1
-  y3 = find_peaks(datab$Ni25Co75),
-  y4 = find_peaks(datab$Co)
+  x = data$"2_theta",
+  y1 = find_peaks(data$Ni75Co25),
+  y2 = find_peaks(data$Ni50Co50),
+  y3 = find_peaks(data$Ni25Co75),
+  y4 = find_peaks(data$Co)
 )
 
 # Filter all the data points with a certain threshold
@@ -175,16 +177,13 @@ ggsave("plot/peaks.png", width = 10, height = 5.625)
 # Filter out zero values
 non_zero_data_long <- data_long[data_long$Intensity != 0, ]
 
-# Perform clustering (replace k with your desired number of clusters)
-
-# Assuming data_long has columns "2_theta" and "Intensity"
+# Perform clustering
 data_for_clustering <- non_zero_data_long[, "2_theta",
   drop = FALSE
 ] # Drop = FALSE ensures it remains a data frame
 
 # Specify the number of clusters (k)
 k <- 22
-# You can adjust this based on your requirements
 
 # Perform k-means clustering based only on 2_theta
 cluster_assignments <- kmeans(data_for_clustering,
@@ -215,8 +214,7 @@ ggplot(non_zero_data_long, aes(
 
 ggsave("plot/peak_clusters.png", width = 10, height = 5.625)
 
-# HACK: NOT FINAL, NEED A LOT OF IMPROVEMENT
-#       CLUSTERING IS TOO RANDOM
+# FIXME: RESULTS CAN VARY DEPENDING ON THE CLUSTER PROCESS
 
 # Perform ANOVA
 anova_result <- aov(`2_theta` ~ Composition * cluster,
@@ -263,24 +261,6 @@ ggplot(non_zero_data_long[19:40, ], aes(
 
 ggsave("plot/theta_zoom.png", width = 10, height = 5.625)
 
-# WARNING: WEIRD RESULTS
-
-# Assuming cluster_assignments is your vector of cluster assignments
-for (i in unique(cluster_assignments)) {
-  cluster_data <- non_zero_data_long[cluster_assignments == i, ]
-
-  # Perform ANOVA within each cluster
-  anova_within_cluster <- aov(`2_theta` ~ Composition, data = cluster_data)
-
-  # Print summary for each cluster
-  cat(paste("Cluster", i, "\n"))
-  print(summary(anova_within_cluster))
-}
-
-# Assuming anova_result is the result from your previous ANOVA
-residuals_within_clusters <- residuals(anova_result)
-print(residuals_within_clusters)
-
 # INTENSITY ANALYSIS
 
 ggplot(non_zero_data_long, aes(
@@ -292,41 +272,6 @@ ggplot(non_zero_data_long, aes(
     title = "Boxplot of the Intensity of the peaks for each cluster",
     x = "2 theta",
     y = "Your Variable"
-  ) +
-  theme_minimal()
-
-# Calculate mean and standard deviation for each Composition
-summary_stats <- non_zero_data_long %>%
-  group_by(Composition) %>%
-  summarize(
-    mean_value = mean(Intensity),
-    sd_value = sd(Intensity)
-  )
-
-# Identify conditions with lowest and highest mean and variance
-lowest_mean_condition <- summary_stats$Composition[
-  which.min(summary_stats$mean_value)
-]
-lowest_sd_condition <- summary_stats$Composition[
-  which.min(summary_stats$sd_value)
-]
-highest_mean_condition <- summary_stats$Composition[
-  which.max(summary_stats$mean_value)
-]
-highest_sd_condition <- summary_stats$Composition[
-  which.max(summary_stats$sd_value)
-]
-
-# Boxplot code
-boxplot_plot <- ggplot(non_zero_data_long, aes(
-  x = "2_theta",
-  y = Intensity, fill = factor(cluster)
-)) +
-  geom_boxplot() +
-  labs(
-    title = "Boxplot of the Intensity of the peaks for each cluster",
-    x = "2 theta",
-    y = "Intensity"
   ) +
   theme_minimal()
 
@@ -349,6 +294,7 @@ anova_result <- aov(Intensity ~ Composition * cluster,
 
 # Print ANOVA summary
 summary(anova_result)
+#Results can vary depending on the clusters process
 
 # Group by cluster and composition, calculate mean 2_theta
 cluster_composition_means <- non_zero_data_long %>%
