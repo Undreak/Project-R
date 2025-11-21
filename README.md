@@ -1,47 +1,46 @@
-# Project R
+# Statistical Analysis of Powder X-Ray Diffraction Data for Ni-Co Perovskites
 
-## Introduction 
-The goal of this project is to make a program in R to analyse data
+Statistical analysis of PXRD data from Ni₍₁₋ₓ₎Coₓ perovskites using R.
 
-## Data
+**Author:** Alexandre De Cuyper (February 2024)
 
-The data used comes from the Complex Material course, using the powder X-Ray diffraction result of three samples. 
-The samples are: 
+## Overview
 
-- Ni75Co25
-- Ni50Co50
-- Ni25Co75
-- Co
+This project applies exploratory data analysis, k-means clustering, and ANOVA to powder X-ray diffraction data from four Ni-Co perovskite compositions (Ni₇₅Co₂₅, Ni₅₀Co₅₀, Ni₂₅Co₇₅, pure Co). The analysis investigates composition-dependent variations in peak positions and intensities, providing evidence for systematic structural changes in the crystalline lattice.
 
-Each dataset is stored in a `.dat` file with the two columns, the first one contains the 2 theta angle and the second contains the intensity values.
+Samples were synthesized as part of the [perovskite-dsc](https://gitlab.com/Undreak/perovskite-dsc) project.
 
-## Goal
-The goal is to use *Experimental Design* to distinguishes the peaks from one another and to try to understand the differences between the three datasets. 
+## Structure
 
-### Idea 1
+```
+Project-R/
+├── project.R                   # Main analysis script
+├── data/                       # Raw XRD .dat files (4 compositions)
+├── plot/                       # Generated visualizations
+└── presentation/
+    └── data_analysis.pdf       # Full analysis presentation
+```
 
-One idea is to use ANOVA to tell if two peaks are at the same value 2 theta or if they are separate, as it can be difficult to tell one from another with a graph.
-So the concept is to use hypothesis testing to see if the difference is statistically significant
+## Requirements
 
-### Idea 2
+R (>= 4.0) with `tidyverse`:
 
-Another idea is to use try to understand the shape of the peak, if it is Gaussian or something else and to get the values that describes the curve.
+```r
+install.packages("tidyverse")
+```
 
-## Experimental Design
+## Usage
 
-### Objectives
+```r
+source("project.R")
+```
 
-Identify if we have a change in structure of the perovskite induced by the change in composition.
-The objective is to study the cause an effect relationship between the composition and the structure.
-The effect is small but should be noticable with powder X-ray diffraction.
+Outputs ANOVA results to console and saves plots to `plot/`.
 
-### Experimental Units
+## Report
 
-We expect the 2 theta position of the peak to be shifted depending on the composition and also less significantly the intensity of the peak. 
+See [presentation/data_analysis.pdf](presentation/data_analysis.pdf) for the full analysis.
 
-### Measurable Variables
+## License
 
-The angle 2 theta and the instensity of the peak for each composition.
-
-### Independent Variables
-The shifting of the position of the peak may be influenced by its 2 theta position.
+[GPL-3.0-or-later](LICENSE)
